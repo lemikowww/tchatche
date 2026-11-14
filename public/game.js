@@ -17,13 +17,13 @@ const store=v=>{try{v?localStorage.setItem('tch',JSON.stringify(v)):localStorage
 
 function home(){
  key='';V=null;auto=null;$.className='';
- $.innerHTML=`<div class="c home"><h1 class="wm" aria-label="Tchatche">${[...'Tchatche'].map((l,i)=>`<span style="--i:${i}">${l}</span>`).join('')}</h1><button class="btn" style="--i:8" onclick="form(1)">Créer une partie</button><button class="btn alt" style="--i:9" onclick="form(0)">Rejoindre une partie</button><p class="mut small">À jouer entre amis, dans la bienveillance. Aucune donnée personnelle n’est conservée : les parties sont effacées après 3 h d’inactivité.</p></div>`;
+ $.innerHTML=`<div class="c home"><h1 class="wm" aria-label="Tchatche">${[...'Tchatche'].map((l,i)=>`<span style="--i:${i}">${l}</span>`).join('')}</h1><button class="btn" style="--i:8" onclick="showForm(1)">Créer une partie</button><button class="btn alt" style="--i:9" onclick="showForm(0)">Rejoindre une partie</button><p class="mut small">À jouer entre amis, dans la bienveillance. Aucune donnée personnelle n’est conservée : les parties sont effacées après 3 h d’inactivité.</p></div>`;
  ready();
 }
-function form(create){
+function showForm(create){
  const pre=new URLSearchParams(location.search).get('code')||'';
  $.innerHTML=`<h2>${create?'Créer une partie':'Rejoindre une partie'}</h2><input id="nm" maxlength="14" placeholder="Ton pseudo" aria-label="Ton pseudo">${create?'':`<input id="cd" maxlength="7" placeholder="Code de la partie" aria-label="Code de la partie" value="${e(pre)}" style="margin-top:10px">`}<p id="er" class="err"></p><button class="btn" id="ok">${create?'Créer':'Rejoindre'}</button><button class="btn alt" onclick="home()">Retour</button>`;
- ok.onclick=async()=>{load(1);try{me=await api(create?'create':'join',{name:nm.value,code:create?'':cd.value});store(me);connect()}catch(x){oops(x.net?'Oups, la connexion a lâché':'Oups, ça ne marche pas',x.message,x.net?'Réessayer':'Retour',()=>x.net?form(create):home())}};
+ ok.onclick=async()=>{load(1);try{me=await api(create?'create':'join',{name:nm.value,code:create?'':cd.value});store(me);connect()}catch(x){oops(x.net?'Oups, la connexion a lâché':'Oups, ça ne marche pas',x.message,x.net?'Réessayer':'Retour',()=>x.net?showForm(create):home())}};
  ready();
 }
 function connect(){
@@ -106,4 +106,4 @@ setInterval(()=>{const t=document.getElementById('t');if(!t||!V)return;const l=M
 try{me=JSON.parse(localStorage.getItem('tch')||'null')}catch{}
 $q('nc').innerHTML=SAD+`<h2>Oups, la connexion a lâché</h2><p class="mut">${NETMSG} On réessaie tout seul…</p>`;
 if(location.pathname!=='/')oops('Page introuvable','Cette page n’existe pas ou plus.','Retour à l’accueil',()=>{history.replaceState(null,'','/');home()});
-else if(me)connect();else if(new URLSearchParams(location.search).get('code'))form(0);else home();
+else if(me)connect();else if(new URLSearchParams(location.search).get("code"))showForm(0);else home();
