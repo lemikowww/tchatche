@@ -17,7 +17,7 @@ const store=v=>{try{v?localStorage.setItem('tch',JSON.stringify(v)):localStorage
 
 function home(){
  key='';V=null;auto=null;$.className='';
- $.innerHTML=`<div class="c home"><h1 class="wm" aria-label="Tchatche">${[...'Tchatche'].map((l,i)=>`<span style="--i:${i}">${l}</span>`).join('')}</h1><button class="btn" style="--i:8" onclick="showForm(1)">Créer une partie</button><button class="btn alt" style="--i:9" onclick="showForm(0)">Rejoindre une partie</button><p class="mut small">À jouer entre amis, dans la bienveillance. Aucune donnée personnelle n’est conservée : les parties sont effacées après 3 h d’inactivité.</p></div>`;
+ $.innerHTML=`<div class="c home"><h1 class="wm" aria-label="Leak Gossip">${(i=>['Leak','Gossip'].map(w=>`<span class="w">${[...w].map(l=>`<span style="--i:${i++}">${l}</span>`).join('')}</span>`).join(''))(0)}</h1><button class="btn" style="--i:11" onclick="showForm(1)">Créer une partie</button><button class="btn alt" style="--i:12" onclick="showForm(0)">Rejoindre une partie</button><p class="mut small">À jouer entre amis, dans la bienveillance. Aucune donnée personnelle n’est conservée.</p></div>`;
  ready();
 }
 function showForm(create){
@@ -33,6 +33,13 @@ function connect(){
  es.onerror=()=>{if(es.readyState===2){store(null);me=null;oops('Partie introuvable','Ce code ne correspond à aucune partie en cours.','Retour à l’accueil',()=>home())}else net(0)};
 }
 let RN=10;
+const fmt=l=>l>=60?`${Math.floor(l/60)}:${String(l%60).padStart(2,'0')}`:l;
+function paint(){
+ paintMain();
+ const sk=$q('sk'),on=V&&V.host===V.you&&V.dl&&['draw','write','vote','res'].includes(V.phase);
+ sk.classList.toggle('show',!!on);
+}
+$q('sk').onclick=()=>{const b=$q('sk');b.disabled=true;setTimeout(()=>b.disabled=false,900);act('skip')};
 const hd=(t,l)=>`${V.dl?'<div class="tm" id="t"></div>':''}<p class="mut">${l||`Manche ${V.round}/${V.rounds}`}</p><h2>${t}</h2>`;
 const wait=m=>{$.innerHTML=`<div class="card c">${BULB}<h2>Envoyé !</h2>${m?`<p>${m}</p>`:''}<p id="st" class="mut"></p></div>`;st()};
 function st(){const s=document.getElementById('st');if(s)s.textContent=`${V.players.filter(p=>p.done).length}/${V.players.filter(p=>p.on).length} ont terminé`}
@@ -43,7 +50,7 @@ function ring(hl){
  return `<div class="ring">${V.players.map((p,i)=>{const a=2*Math.PI*i/n-Math.PI/2;return `<div class="rv${p.id===hl?' hl':''}${p.on?'':' gone'}" style="left:${50+42*Math.cos(a)}%;top:${50+42*Math.sin(a)}%;width:${w}%;--i:${i}" title="${e(p.name)}">${av(p)}</div>`}).join('')}<div class="mid">${BULB}</div></div>`;
 }
 const info=(t,m)=>`<h2 class="c">${t}</h2><p class="mut c">${m}</p>`;
-function paint(){
+function paintMain(){
  const c=V.cur,k=V.phase==='lobby'?'l'+JSON.stringify(V.players.map(p=>[p.id,p.on])):V.phase+V.round+(c?c.w+c.role+(c.out||''):'')+V.mine;
  if(k===key)return st();
  $.classList.toggle('still',k[0]==='l'&&key[0]==='l');key=k;auto=null;
@@ -101,7 +108,7 @@ function paint(){
   quit.onclick=()=>{es.close();store(null);me=null;home()};
  }
 }
-setInterval(()=>{const t=document.getElementById('t');if(!t||!V)return;const l=Math.max(0,Math.ceil((V.dl-(Date.now()+off))/1000));t.textContent=l;t.classList.toggle('hurry',l<=5);if(l<=1&&auto){const f=auto;auto=null;f()}},250);
+setInterval(()=>{const t=document.getElementById('t');if(!t||!V)return;const l=Math.max(0,Math.ceil((V.dl-(Date.now()+off))/1000));t.textContent=fmt(l);t.classList.toggle('hurry',l<=5);if(l<=1&&auto){const f=auto;auto=null;f()}},250);
 
 try{me=JSON.parse(localStorage.getItem('tch')||'null')}catch{}
 $q('nc').innerHTML=SAD+`<h2>Oups, la connexion a lâché</h2><p class="mut">${NETMSG} On réessaie tout seul…</p>`;

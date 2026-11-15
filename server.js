@@ -1,8 +1,15 @@
-// Tchatche : serveur de jeu (Node.js 18+, aucune dépendance). Temps réel via Server-Sent Events.
+// Leak Gossip : serveur de jeu (Node.js 18+, aucune dépendance). Temps réel via Server-Sent Events.
 const http = require('http'), fs = require('fs'), path = require('path'), crypto = require('crypto');
 const PORT = process.env.PORT || 3000, K = +process.env.TCH_SPEED || 1; // TCH_SPEED=10 accélère les minuteurs (tests uniquement)
-const D = { draw: 60, write: 60, vote: 25, res: 9 }; // durées en secondes
 const MIN = 4, MAX = 36, MAX_ROOMS = 800;
+// Durées en secondes : [avec 4 joueurs, avec 36 joueurs], proportionnelles au nombre de joueurs connectés
+const DUR = { draw: [60, 90], write: [60, 120], vote: [25, 60], res: [60, 330] };
+const SHORT_RES = 8; // quand rien n’est révélé (secret gardé ou texte vide), on n’attend pas
+const dur = (s, ph) => {
+  if (!DUR[ph]) return 0;
+  const [a, b] = DUR[ph], f = Math.min(1, Math.max(0, (live(s).length - MIN) / (MAX - MIN)));
+  return Math.round(a + (b - a) * f);
+};
 const rooms = new Map();
 const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const clean = (t, n) => String(t || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n);
@@ -44,8 +51,10 @@ function view(s, id) {
 }
 function push(s) { for (const p of s.pl.values()) if (p.res) { try { p.res.write('data:' + JSON.stringify(view(s, p.id)) + '\n\n'); } catch (e) { p.res = null; } } }
 function go(s, ph) {
-  clearTimeout(s.t); s.phase = ph; s.sub = {}; s.vote = {}; s.dl = D[ph] ? Date.now() + D[ph] * 1000 / K : 0;
-  if (D[ph]) s.t = setTimeout(() => adv(s), D[ph] * 1000 / K);
+  clearTimeout(s.t); s.phase = ph; s.sub = {}; s.vote = {}; s.pst = Date.now();
+  const sec = ph === 'res' && s.cur && s.cur.out !== 'shown' ? SHORT_RES : dur(s, ph);
+  s.dl = sec ? Date.now() + sec * 1000 / K : 0;
+  if (sec) s.t = setTimeout(() => adv(s), sec * 1000 / K);
   push(s);
 }
 function startRound(s) { // un écrivain (chacun son tour) et une cible tirée au sort
@@ -87,6 +96,10 @@ function act(s, p, t, d) {
     const o = shuf(live(s)); o.forEach((x, i) => { x.face = null; s.tg[x.id] = o[(i + 1) % o.length].id; });
     return go(s, 'draw');
   }
+  if (t === 'skip' && s.host === p.id && ['draw', 'write', 'vote', 'res'].includes(ph)) { // l’hôte peut passer le compte à rebours
+    if (Date.now() - s.pst < 700) return; // évite de sauter deux étapes d’un double clic
+    return adv(s);
+  }
   if (t === 'again' && ph === 'final' && s.host === p.id) { s.pl.forEach(x => { x.face = null; }); return go(s, 'lobby'); }
   if (t === 'face' && ph === 'draw' && s.tg[p.id] && !(p.id in s.sub) && /^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(d.v || '') && d.v.length < 60000) { s.sub[p.id] = 1; s.pl.get(s.tg[p.id]).face = d.v; }
   else if (t === 'text' && ph === 'write' && p.id === s.cur.w && !(p.id in s.sub)) s.sub[p.id] = clean(d.v, 200);
@@ -97,7 +110,7 @@ function act(s, p, t, d) {
 
 const FILES = {
   '/': ['index.html', 'text/html; charset=utf-8'], '/style.css': ['style.css', 'text/css; charset=utf-8'], '/game.js': ['game.js', 'text/javascript; charset=utf-8'],
-  '/icone-tchatche.svg': ['icone-tchatche.svg', 'image/svg+xml'], '/manifest.webmanifest': ['manifest.webmanifest', 'application/manifest+json'], '/robots.txt': ['robots.txt', 'text/plain; charset=utf-8']
+  '/icone-tchatche.svg': ['icone-tchatche.svg', 'image/svg+xml'], '/manifest.webmanifest': ['manifest.webmanifest', 'application/manifest+json']
 };
 const STATIC = {}; for (const [u, [f, t]] of Object.entries(FILES)) STATIC[u] = { body: fs.readFileSync(path.join(__dirname, 'public', f)), type: t };
 const SEC = {
@@ -114,6 +127,12 @@ const server = http.createServer(async (q, r) => {
   r.on('error', () => {});
   try {
     if (q.method === 'GET' && u.pathname === '/health') { r.writeHead(200, { 'Content-Type': 'text/plain' }); return r.end('ok'); }
+    if (q.method === 'GET' && (u.pathname === '/robots.txt' || u.pathname === '/sitemap.xml')) {
+      const h = String(q.headers.host || ''), host = /^[a-z0-9.-]+(:\d+)?$/i.test(h) ? h : 'localhost', proto = q.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http', base = proto + '://' + host;
+      r.writeHead(200, { 'Content-Type': u.pathname === '/robots.txt' ? 'text/plain; charset=utf-8' : 'application/xml; charset=utf-8', ...SEC });
+      return r.end(u.pathname === '/robots.txt' ? 'User-agent: *\nAllow: /\nSitemap: ' + base + '/sitemap.xml\n'
+        : '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>' + base + '/</loc></url></urlset>\n');
+    }
     if (q.method === 'GET' && !u.pathname.startsWith('/api/')) {
       const f = STATIC[u.pathname] || STATIC['/'];
       r.writeHead(STATIC[u.pathname] ? 200 : 404, { 'Content-Type': f.type, 'Cache-Control': 'no-cache', ...SEC }); return r.end(f.body);
@@ -147,7 +166,7 @@ const server = http.createServer(async (q, r) => {
     r.writeHead(404, SEC); r.end();
   } catch (x) { send(400, { error: 'Requête invalide.' }); }
 });
-server.listen(PORT, () => console.log('Tchatche sur http://localhost:' + PORT));
+server.listen(PORT, () => console.log('Leak Gossip sur http://localhost:' + PORT));
 
 setInterval(() => rooms.forEach(s => s.pl.forEach(p => { try { p.res && p.res.write(': ping\n\n'); } catch (e) { p.res = null; } })), 20000);
 setInterval(() => { hits.clear(); rooms.forEach((s, k) => { if (Date.now() - s.seen > 3 * 3600e3 && !live(s).length) { clearTimeout(s.t); rooms.delete(k); } }); }, 600000);

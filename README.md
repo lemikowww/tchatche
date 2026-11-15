@@ -1,4 +1,4 @@
-# Tchatche
+# Leak Gossip
 
 Jeu d’humour entre amis, jouable en ligne depuis n’importe quel navigateur (téléphone, tablette, ordinateur) : on écrit un secret sur un copain, et un jury choisi en secret décide s’il faut le révéler.
 
@@ -28,24 +28,28 @@ Railway, Fly.io ou un petit serveur à toi (VPS) fonctionnent aussi. Le port est
 ## Règles implémentées (mode principal)
 
 - **Salon** : l’hôte crée la partie, un code de 7 caractères (ex. Bimapo4) et un QR code s’affichent. De 4 à 36 joueurs. On ne peut plus rejoindre une partie commencée. L’hôte choisit le nombre de manches, de 3 à 40.
-- **Têtes** : chaque joueur dessine la tête d’un autre joueur tiré au sort (60 s), en cercle fermé : Sam dessine Lola, Lola dessine Léo, etc. Le dessin devient la photo de profil du joueur dessiné pour toute la partie.
+- **Têtes** : chaque joueur dessine la tête d’un autre joueur tiré au sort (60 s avec 4 joueurs, jusqu’à 90 s avec 36), en cercle fermé : Sam dessine Lola, Lola dessine Léo, etc. Le dessin devient la photo de profil du joueur dessiné pour toute la partie.
 - **L’écran de jeu** : une ronde montre les photos de profil de tous les joueurs, avec l’ampoule au centre. Quand quelqu’un écrit, sa photo s’illumine.
 - **Une manche** :
-  1. Le jeu choisit un écrivain (chacun son tour, dans un ordre mélangé) et une cible tirée au sort parmi les autres. L’écrivain voit la cible et écrit un texte à son sujet (60 s, 200 caractères). Les autres voient seulement « X écrit… ».
-  2. Le texte est montré en secret à des votants tirés au sort (un tiers des joueurs, au moins 2, ni l’écrivain ni la cible). Personne ne sait qui ils sont. Ils votent « révéler » ou « garder le secret » (25 s).
+  1. Le jeu choisit un écrivain (chacun son tour, dans un ordre mélangé) et une cible tirée au sort parmi les autres. L’écrivain voit la cible et écrit un texte à son sujet (200 caractères). Les autres voient seulement « X écrit… ».
+  2. Le texte est montré en secret à des votants tirés au sort (un tiers des joueurs, au moins 2, ni l’écrivain ni la cible). Personne ne sait qui ils sont. Ils votent « révéler » ou « garder le secret » .
   3. Si plus de la moitié des votants dit « révéler », le texte est révélé à tout le monde avec la photo de la cible, et on voit sa réaction (en vrai ou en appel vidéo). Sinon, il reste secret. En cas d’égalité, il reste secret.
   4. Les joueurs qui ne votent pas voient l’ampoule : « Tu n’as pas été désigné pour voter. Attends que les autres votent. »
 - **Fin** : après le nombre de manches choisi, un écran récapitule les secrets révélés. Pas de points pour l’instant. L’hôte peut relancer une partie.
 - Une étape se termine dès que tous les joueurs concernés ont répondu. Si l’écrivain ne répond pas, la manche est sautée. Un joueur déconnecté peut revenir en rouvrant la page.
 - Le serveur ne transmet un secret qu’aux joueurs autorisés : un texte n’arrive jamais sur l’appareil de quelqu’un qui n’a pas le droit de le voir.
 
-Les durées sont dans le haut de `server.js` (objet `D`), ainsi que le minimum et le maximum de joueurs.
+- **Comptes à rebours** : ils s’adaptent au nombre de joueurs, de 4 à 36. Écriture : 1 min à 2 min. Vote : 25 s à 1 min. Révélation (le temps de réagir) : 1 min avec 4 joueurs, jusqu’à 5 min 30 avec 36. Quand rien n’est révélé, l’attente est de 8 s seulement.
+- **Passer** : l’hôte a un bouton « Passer le compte à rebours » en bas de l’écran, à tout moment (dessin, écriture, vote, révélation).
+
+Les durées sont dans le haut de `server.js` (objet `DUR`, valeurs pour 4 puis 36 joueurs), ainsi que le minimum et le maximum de joueurs.
+
 
 ## Fichiers
 
 - `server.js` : le serveur. Il garde l’état de chaque partie en mémoire et décide de tout (étapes, minuteurs, votes). Les joueurs ne peuvent donc pas tricher, et les secrets ne sont envoyés qu’aux joueurs autorisés.
 - `public/index.html` : la structure de la page. `public/style.css` : tout le style (couleurs, polices, animations). `public/game.js` : l’interface du jeu.
-- `public/icone-tchatche.svg` : l’icône. `public/manifest.webmanifest` : permet d’ajouter le site à l’écran d’accueil du téléphone. `public/robots.txt`.
+- `public/icone-tchatche.svg` : l’icône. `public/manifest.webmanifest` : permet d’ajouter le site à l’écran d’accueil du téléphone. Le serveur génère aussi `/robots.txt` et `/sitemap.xml` (pour les moteurs de recherche).
 - `package.json`, `render.yaml` (déploiement Render), `.gitignore`.
 
 Le temps réel utilise les Server-Sent Events : le serveur envoie l’état à chaque joueur, et les joueurs répondent par de simples requêtes. Cela passe partout et ne demande aucune bibliothèque.
@@ -63,8 +67,8 @@ Le temps réel utilise les Server-Sent Events : le serveur envoie l’état à c
 
 1. Crée un compte sur github.com et un dépôt, puis envoie-y le contenu de ce dossier (le fichier `server.js` doit être à la racine du dépôt).
 2. Sur render.com, choisis « New » puis « Blueprint » (ou « Web Service »), et relie ton dépôt GitHub. Le fichier `render.yaml` règle tout : commande de démarrage `node server.js`, adresse de contrôle `/health`.
-3. Au bout de quelques minutes, Render te donne une adresse en https (du style tchatche.onrender.com). C’est l’adresse que tu partages.
-4. Pour avoir ta propre adresse (ex. tchatche.fr), achète un nom de domaine, puis ajoute-le dans les réglages « Custom Domains » de Render.
+3. Au bout de quelques minutes, Render te donne une adresse en https (du style leak-gossip.onrender.com). C’est l’adresse que tu partages.
+4. Pour avoir ta propre adresse (ex. leakgossip.fr), achète un nom de domaine, puis ajoute-le dans les réglages « Custom Domains » de Render.
 
 À savoir : sur l’offre gratuite, le serveur s’endort sans visite et le premier chargement prend alors environ une minute (l’écran de chargement avec l’ampoule s’affiche pendant ce temps). Une offre payante supprime cet endormissement. Il faut un seul serveur : les parties sont en mémoire, donc ne lance pas plusieurs copies.
 

@@ -1,7 +1,7 @@
 {
-  "name": "tchatche",
+  "name": "leak-gossip",
   "version": "1.0.0",
-  "description": "Tchatche : jeu d’humour et d’imagination entre amis, en ligne.",
+  "description": "Leak Gossip : jeu d’humour et d’imagination entre amis, en ligne.",
   "main": "server.js",
   "scripts": { "start": "node server.js" },
   "engines": { "node": ">=18" },

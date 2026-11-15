@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: tchatche
+    name: leak-gossip
     runtime: node
     plan: free
     buildCommand: echo "rien à construire"
