@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: leak-gossip
-    runtime: node
-    plan: free
-    buildCommand: echo "rien à construire"
-    startCommand: node server.js
-    healthCheckPath: /health
