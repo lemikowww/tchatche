@@ -83,3 +83,29 @@ input[type=range]{padding:0;accent-color:var(--acc)}
 
 .skipbtn{display:none;position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));margin:0 auto;width:fit-content;z-index:40;padding:10px 20px;font-size:15px}
 .skipbtn.show{display:block}
+
+/* Accueil : comment jouer, modes */
+.home{min-height:86vh}.more{background:none;border:0;color:var(--mut);font:inherit;font-weight:800;cursor:pointer;margin-top:18px;animation:bob 1.8s ease-in-out infinite}
+.how,.modes{margin-top:34px}.how h2,.modes h2{margin-bottom:18px}
+.step{position:relative;background:var(--card);border-radius:26px;padding:16px 16px 14px;margin:16px 0}
+.step h3{margin:0 0 10px 46px;font:400 1.35rem/1.1 'Bagel Fat One',Impact,sans-serif}.step p{margin:10px 2px 0}
+.num{position:absolute;left:14px;top:12px;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#2A1A5E;display:grid;place-items:center;font:1.1rem 'Bagel Fat One',sans-serif}
+.scene{width:100%;height:auto;display:block;border-radius:20px}
+.scene *{transform-box:fill-box;transform-origin:center}
+.bob2{animation:bob2 2.4s ease-in-out infinite}@keyframes bob2{50%{transform:translateY(-4px) rotate(3deg)}}
+.arm{animation:tap 3.6s infinite}@keyframes tap{0%,30%{transform:none}38%{transform:translateX(7px)}46%,100%{transform:none}}
+.rip{opacity:0;animation:rip 3.6s infinite}@keyframes rip{0%,36%{opacity:0;transform:scale(.4)}40%{opacity:1}60%{opacity:0;transform:scale(3)}100%{opacity:0}}
+.code{opacity:0;animation:codein 3.6s infinite}@keyframes codein{0%,42%{opacity:0;transform:translateY(8px)}55%,92%{opacity:1;transform:none}100%{opacity:0}}
+.pi{opacity:0;animation:pi 4s infinite both}@keyframes pi{0%{opacity:0;transform:scale(0)}8%{opacity:1;transform:scale(1.2)}14%,88%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.hl{fill:none;stroke:#FFC93C;stroke-width:4;opacity:0;animation:hl 6s infinite}@keyframes hl{0%,22%{opacity:1}25%,100%{opacity:0}}
+.jump{animation:jump 1.6s infinite}@keyframes jump{0%,100%{transform:none}40%{transform:translateY(-10px) rotate(-4deg)}60%{transform:none}}
+.tw{animation:tw 1.8s infinite}@keyframes tw{50%{opacity:.2;transform:scale(.4)}}
+.press{animation:press 1.6s infinite}@keyframes press{0%,55%,100%{transform:none}65%{transform:translateY(3px) scale(.96)}}
+.mc{display:flex;gap:14px;align-items:flex-start;background:var(--card);border-radius:26px;padding:14px;margin:14px 0;text-align:left}
+.mc img{flex:none;border-radius:20px}.mc h3{margin:0 0 2px;font:400 1.3rem/1.1 'Bagel Fat One',Impact,sans-serif}.mc p{margin:6px 0 0}.small2{font-size:14px;margin:0!important}
+.soon{display:inline-block;font:800 11px Nunito,sans-serif;background:var(--acc);color:#2A1A5E;border-radius:99px;padding:3px 9px;vertical-align:middle;margin-left:6px}
+.mp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 14px}
+.mpb{position:relative;font:inherit;background:var(--card);color:var(--ink);border:3px solid transparent;border-radius:20px;padding:10px 6px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mpb img{border-radius:14px}.mpb b{font-size:14px}.mpb.sel{border-color:var(--acc)}.mpb:disabled{opacity:.5;cursor:not-allowed}
+.mpb i{position:absolute;top:6px;right:6px;font:800 10px Nunito,sans-serif;font-style:normal;background:var(--acc);color:#2A1A5E;border-radius:99px;padding:2px 7px}
+.mbadge{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;color:var(--mut);margin-bottom:4px}.mbadge img{border-radius:10px}
