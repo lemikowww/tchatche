@@ -19,10 +19,11 @@ function newCode() { // 7 caractères prononçables, ex. Bimapo4 (plus de 6 mill
   let c = ''; for (let i = 0; i < 3; i++) c += CONS[crypto.randomInt(CONS.length)] + VOW[crypto.randomInt(VOW.length)];
   return c[0].toUpperCase() + c.slice(1) + (1 + crypto.randomInt(9));
 }
+const MODES_ON = ['gossip']; // les autres modes seront ajoutés ici au fur et à mesure
 function mkRoom() {
   if (rooms.size >= MAX_ROOMS) return null;
   let c; do c = newCode(); while (rooms.has(c.toLowerCase()));
-  const s = { code: c, pl: new Map(), tk: new Map(), n: 0, host: null, phase: 'lobby', round: 0, rounds: 10, sub: {}, vote: {}, cur: null, q: [], log: [], tg: {}, dl: 0, t: null, seen: Date.now() };
+  const s = { code: c, pl: new Map(), tk: new Map(), n: 0, host: null, phase: 'lobby', mode: 'gossip', round: 0, rounds: 10, sub: {}, vote: {}, cur: null, q: [], log: [], tg: {}, dl: 0, t: null, seen: Date.now() };
   rooms.set(c.toLowerCase(), s); return s;
 }
 // id = identifiant public (vu par tous) ; tok = jeton secret du joueur (jamais diffusé), il sert à s’authentifier
@@ -42,7 +43,7 @@ function view(s, id) {
       text: role === 'voter' || shown ? c.text : null };
   }
   return {
-    code: s.code, phase: ph, round: s.round, rounds: s.rounds, dl: s.dl, now: Date.now(), host: s.host, you: id,
+    code: s.code, phase: ph, mode: s.mode, round: s.round, rounds: s.rounds, dl: s.dl, now: Date.now(), host: s.host, you: id,
     players: [...s.pl.values()].map(p => ({ id: p.id, name: p.name, face: p.face, on: !!p.res, done: ph === 'draw' && p.id in s.sub })),
     mine: ph === 'vote' ? id in s.vote : id in s.sub, cur,
     target: ph === 'draw' && s.tg[id] ? nm(s.tg[id]) : null,
@@ -151,7 +152,7 @@ const server = http.createServer(async (q, r) => {
       if (u.pathname === '/api/create') {
         if (over('mk' + ip, 20, 600000)) return send(429, { error: 'Trop de parties créées. Réessaie dans quelques minutes.' });
         const s = mkRoom(); if (!s) return send(503, { error: 'Le site est complet pour le moment. Réessaie bientôt.' });
-        add('mk' + ip); const p = addPl(s, d.name); s.host = p.id; return send(200, { code: s.code, id: p.tok });
+        add('mk' + ip); if (MODES_ON.includes(d.mode)) s.mode = d.mode; const p = addPl(s, d.name); s.host = p.id; return send(200, { code: s.code, id: p.tok });
       }
       if (over('bad' + ip, 40, 600000)) return send(429, { error: 'Trop d’essais. Réessaie dans quelques minutes.' });
       const s = rooms.get(String(d.code || '').toLowerCase()); if (!s) { add('bad' + ip); return send(404, { error: 'Code inconnu.' }); }
