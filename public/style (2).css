@@ -1,0 +1,134 @@
+:root{--bg:#F5F0FF;--ink:#2A1A5E;--card:#fff;--acc:#FFC93C;--pop:#FF5A6E;--mut:#7a6fa6;--mint:#12A674;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1F1347;--ink:#FFF6E5;--card:#2D1E63;--mut:#b9aee6;--mint:#3DDC97}}
+:root[data-theme="dark"]{--bg:#1F1347;--ink:#FFF6E5;--card:#2D1E63;--mut:#b9aee6;--mint:#3DDC97}
+*{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:600 17px/1.45 Nunito,system-ui,sans-serif;min-height:100vh}
+h1,h2,.d{font-family:'Bagel Fat One',Impact,'Arial Black',sans-serif;font-weight:400;line-height:1.05;margin:.3em 0}
+h2{font-size:1.7rem}.wm{font-size:4.6rem;line-height:.95;margin:.2em 0 .5em}.wm .w{display:block}
+#app{max-width:520px;margin:0 auto;padding:20px 18px 96px}
+.c{text-align:center}.home{min-height:72vh;display:flex;flex-direction:column;justify-content:center}
+.btn{display:block;font:inherit;font-weight:800;border:0;border-radius:18px;padding:14px 20px;background:var(--acc);color:#2A1A5E;cursor:pointer;width:100%;margin:10px 0;box-shadow:0 4px 0 rgba(42,26,94,.35)}
+.btn:active{transform:translateY(3px);box-shadow:none}
+.btn.alt{background:var(--card);color:var(--ink);border:2px solid var(--mut);box-shadow:none}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.opt{text-align:left;font-weight:600}.opt:active{background:var(--pop);color:#fff}
+:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
+input,textarea,select{font:inherit;width:100%;padding:12px 14px;border-radius:14px;border:2px solid var(--mut);background:var(--card);color:var(--ink)}
+.card{background:var(--card);border-radius:22px;padding:14px 16px;margin:10px 0}
+.sit{background:var(--acc);color:#2A1A5E;font-size:1.25rem;font-weight:800;text-align:center;border-radius:26px;padding:22px;transform:rotate(-1.5deg)}
+.pl{display:flex;align-items:center;gap:12px}.pl b{flex:1;overflow-wrap:anywhere}
+.av{width:46px;height:46px;border-radius:50%;background:#fff;color:#2A1A5E;object-fit:cover;display:grid;place-items:center;font:1.3rem 'Bagel Fat One',sans-serif;flex:none;border:2px solid var(--acc)}
+.code{font:2.5rem 'Bagel Fat One',Impact,sans-serif;letter-spacing:.06em;background:var(--acc);color:#2A1A5E;border-radius:22px;padding:12px;text-align:center;transform:rotate(-2deg);margin:14px 0}
+.tm{float:right;font:1.6rem 'Bagel Fat One',sans-serif;background:var(--pop);color:#fff;border-radius:99px;min-width:54px;height:54px;padding:0 14px;display:grid;place-items:center}
+canvas.cv{width:100%;aspect-ratio:1;background:#fff;border-radius:22px;touch-action:none;display:block}
+#qr{display:grid;place-items:center}#qr img,#qr canvas{background:#fff;padding:8px;border-radius:12px}
+.pts{color:var(--mint);font-weight:800}.mut{color:var(--mut)}.err{color:var(--pop);font-weight:800}
+
+/* Chargement, mascotte, animations */
+#ld{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#2A1A5E;color:#FFF6E5;transition:opacity .4s,visibility .4s}
+#ld.off{opacity:0;visibility:hidden}
+.orbit{transform-box:view-box;transform-origin:100px 100px;animation:spin 7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.breathe{transform-box:view-box;transform-origin:100px 100px;animation:breathe 2.4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.08)}}
+.loadtxt{font-weight:800;margin:6px 0 0}.loadtxt span{animation:dot 1.2s infinite both}
+.loadtxt span:nth-child(2){animation-delay:.2s}.loadtxt span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.ov{position:fixed;inset:0;z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:var(--bg)}
+.ov.show{display:flex}
+.sway{transform-box:view-box;transform-origin:100px 125px;animation:sway 3.2s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.flick{animation:flick 3.2s infinite}
+@keyframes flick{0%,100%{opacity:1}45%{opacity:.55}50%{opacity:1}55%{opacity:.7}}
+.tear{fill:var(--mut);animation:tear 2.2s ease-in infinite}
+@keyframes tear{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(16px)}}
+.bob{animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(3deg)}}
+#app>*{animation:enter .45s ease both}#app.still>*{animation:none}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wm span{display:inline-block;animation:pop .6s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--i)*70ms)}
+@keyframes pop{from{opacity:0;transform:scale(.3) translateY(24px)}to{opacity:1;transform:none}}
+.btn{transition:transform .15s,box-shadow .15s;animation:enter .5s ease both;animation-delay:calc(var(--i,0)*70ms)}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(3px) scale(.98)}
+.tm{animation:beat 1s ease-in-out infinite}.tm.hurry{animation-duration:.45s}
+@keyframes beat{50%{transform:scale(1.12)}}
+.sit{animation:reveal .7s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes reveal{from{opacity:0;transform:rotate(-8deg) scale(.6)}to{opacity:1;transform:rotate(-1.5deg)}}
+.card.r{animation:slide .5s ease both;animation-delay:calc(var(--i)*.25s + .4s)}
+@keyframes slide{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:none}}
+.cf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:30}
+.cf i{position:absolute;top:-16px;width:9px;height:14px;border-radius:2px;animation:fall linear both}
+@keyframes fall{to{transform:translateY(110vh) rotate(var(--r))}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Ronde des joueurs */
+.ring{position:relative;width:100%;max-width:360px;aspect-ratio:1;margin:6px auto 10px}
+.rv{position:absolute;transform:translate(-50%,-50%);transition:transform .3s,opacity .3s}
+.rv .av{width:100%;height:auto;aspect-ratio:1;font-size:clamp(8px,2.4vw,15px);border-width:2px}
+.rv.gone{opacity:.35}
+.rv.hl{z-index:2;transform:translate(-50%,-50%) scale(1.45)}
+.rv.hl .av{border-color:#FFC93C;animation:glow 1.2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 6px 2px #FFC93C}50%{box-shadow:0 0 20px 8px #FFC93C}}
+.mid{position:absolute;left:30%;top:30%;width:40%;display:grid;place-items:center}.mid svg{width:100%;height:auto}
+.big .av{width:88px;height:88px;font-size:2.2rem;margin:6px auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+.chip{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:99px;padding:4px 14px 4px 4px;font-size:15px}
+.chip .av{width:32px;height:32px;font-size:.95rem}
+input[type=range]{padding:0;accent-color:var(--acc)}
+
+.small{font-size:13px;margin-top:22px}
+.rv{animation:rvpop .5s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(var(--i,0)*35ms)}
+@keyframes rvpop{from{opacity:0;transform:translate(-50%,-50%) scale(.2)}}
+
+.skipbtn{display:none;position:fixed;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));margin:0 auto;width:fit-content;z-index:40;padding:10px 20px;font-size:15px}
+.skipbtn.show{display:block}
+
+/* Accueil : comment jouer, modes */
+.home{min-height:86vh}.more{background:none;border:0;color:var(--mut);font:inherit;font-weight:800;cursor:pointer;margin-top:18px;animation:bob 1.8s ease-in-out infinite}
+.how,.modes{margin-top:34px}.how h2,.modes h2{margin-bottom:18px}
+.step{position:relative;background:var(--card);border-radius:26px;padding:16px 16px 14px;margin:16px 0}
+.step h3{margin:0 0 10px 46px;font:400 1.35rem/1.1 'Bagel Fat One',Impact,sans-serif}.step p{margin:10px 2px 0}
+.num{position:absolute;left:14px;top:12px;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#2A1A5E;display:grid;place-items:center;font:1.1rem 'Bagel Fat One',sans-serif}
+.scene{width:100%;height:auto;display:block;border-radius:20px}
+.scene *{transform-box:fill-box;transform-origin:center}
+.bob2{animation:bob2 2.4s ease-in-out infinite}@keyframes bob2{50%{transform:translateY(-4px) rotate(3deg)}}
+.arm{animation:tap 3.6s infinite}@keyframes tap{0%,30%{transform:none}38%{transform:translateX(7px)}46%,100%{transform:none}}
+.rip{opacity:0;animation:rip 3.6s infinite}@keyframes rip{0%,36%{opacity:0;transform:scale(.4)}40%{opacity:1}60%{opacity:0;transform:scale(3)}100%{opacity:0}}
+.code{opacity:0;animation:codein 3.6s infinite}@keyframes codein{0%,42%{opacity:0;transform:translateY(8px)}55%,92%{opacity:1;transform:none}100%{opacity:0}}
+.pi{opacity:0;animation:pi 4s infinite both}@keyframes pi{0%{opacity:0;transform:scale(0)}8%{opacity:1;transform:scale(1.2)}14%,88%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.hl{fill:none;stroke:#FFC93C;stroke-width:4;opacity:0;animation:hl 6s infinite}@keyframes hl{0%,22%{opacity:1}25%,100%{opacity:0}}
+.jump{animation:jump 1.6s infinite}@keyframes jump{0%,100%{transform:none}40%{transform:translateY(-10px) rotate(-4deg)}60%{transform:none}}
+.tw{animation:tw 1.8s infinite}@keyframes tw{50%{opacity:.2;transform:scale(.4)}}
+.press{animation:press 1.6s infinite}@keyframes press{0%,55%,100%{transform:none}65%{transform:translateY(3px) scale(.96)}}
+.mc{display:flex;gap:14px;align-items:flex-start;background:var(--card);border-radius:26px;padding:14px;margin:14px 0;text-align:left}
+.mc img{flex:none;border-radius:20px}.mc h3{margin:0 0 2px;font:400 1.3rem/1.1 'Bagel Fat One',Impact,sans-serif}.mc p{margin:6px 0 0}.small2{font-size:14px;margin:0!important}
+.soon{display:inline-block;font:800 11px Nunito,sans-serif;background:var(--acc);color:#2A1A5E;border-radius:99px;padding:3px 9px;vertical-align:middle;margin-left:6px}
+.mp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 14px}
+.mpb{position:relative;font:inherit;background:var(--card);color:var(--ink);border:3px solid transparent;border-radius:20px;padding:10px 6px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mpb img{border-radius:14px}.mpb b{font-size:14px}.mpb.sel{border-color:var(--acc)}.mpb:disabled{opacity:.5;cursor:not-allowed}
+.mpb i{position:absolute;top:6px;right:6px;font:800 10px Nunito,sans-serif;font-style:normal;background:var(--acc);color:#2A1A5E;border-radius:99px;padding:2px 7px}
+.mbadge{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:800;color:var(--mut);margin-bottom:4px}.mbadge img{border-radius:10px}
+
+/* Formulaire : étapes et cartes de mode */
+.form{display:block}.fh{margin-bottom:8px}.fh svg{width:54px;height:auto}
+.fs{display:flex;align-items:center;gap:10px;margin:18px 0 8px}.fs .num{position:static;flex:none}.fs b{font-size:1.05rem}
+.cdin{text-align:center;font:1.8rem 'Bagel Fat One',Impact,sans-serif;letter-spacing:.08em}
+.mpl{display:flex;flex-direction:column;gap:10px;margin:0 0 14px}
+.mpl .mpb{flex-direction:row;align-items:center;gap:12px;text-align:left;padding:10px 12px;width:100%;border-radius:22px}
+.mpl .mpb img{flex:none;border-radius:16px}.mt{display:flex;flex-direction:column;gap:1px;min-width:0}.mt b{font-size:1.05rem}.mt span{font-size:13.5px;font-weight:600;line-height:1.3;color:var(--mut)}.mt small{font-size:12px;font-weight:800;color:var(--ink);opacity:.7}
+.mpl .mpb.sel{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,var(--card))}
+.ck{flex:none;margin-left:auto;width:26px;height:26px;border-radius:50%;border:2px solid var(--mut);display:grid;place-items:center;font-style:normal;font-weight:800;color:transparent}
+.mpb.sel .ck{background:var(--acc);border-color:var(--acc);color:#2A1A5E}
+.mpl .mpb i{position:static;margin-left:auto;flex:none}
+
+/* Nouveaux modes */
+.sit.s2{font-size:1.05rem;padding:14px;transform:none;animation:none;margin:10px 0}
+.card.win{outline:3px solid var(--acc)}.rk{font:1.1rem 'Bagel Fat One',sans-serif;width:1.4em;text-align:center;color:var(--mut)}
+.opt small{opacity:.6}label.mut{display:block;margin:10px 0 4px}textarea{resize:vertical}
+.tools{margin:10px 0}.pal{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+.sw{width:34px;height:34px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--mut);cursor:pointer;padding:0}.sw.sel{box-shadow:0 0 0 3px var(--ink);transform:scale(1.12)}
+.wd{display:flex;gap:10px;justify-content:center;align-items:center;margin-bottom:8px}.wb{width:44px;height:44px;border-radius:50%;border:2px solid var(--mut);background:var(--card);display:grid;place-items:center;cursor:pointer;padding:0}.wb i{display:block;border-radius:50%;background:var(--ink)}.wb.sel{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 25%,var(--card))}
+.tb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.tl{font:inherit;font-weight:800;font-size:14px;border:2px solid var(--mut);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 14px;cursor:pointer}.tl.sel{border-color:var(--acc);background:var(--acc);color:#2A1A5E}
+.chain{display:flex;flex-direction:column;gap:6px;margin:10px 0 16px}.link .by{display:block;font-size:13px;font-weight:800;color:var(--mut);margin:8px 4px 2px}.link .cv{height:auto}
+body{padding-bottom:84px}
